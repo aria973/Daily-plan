@@ -1,0 +1,788 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Todo </title>
+  <style>
+    :root{
+      --bg:#0b0f14;
+      --card:rgba(17,24,38,.92);
+      --text:#e8eef6;
+      --muted:#9fb0c3;
+      --line:rgba(255,255,255,.12);
+      --accent:#7dd3fc;
+      --ok:#34d399;
+      --danger:#fb7185;
+      --shadow: 0 18px 55px rgba(0,0,0,.55);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      background:
+        radial-gradient(1200px 700px at 70% -10%, rgba(125,211,252,.14), transparent 60%),
+        radial-gradient(900px 600px at 10% 10%, rgba(52,211,153,.09), transparent 55%),
+        var(--bg);
+      color:var(--text);
+      line-height:1.75;
+      padding:18px;
+    }
+    .wrap{max-width:980px;margin:0 auto}
+    .card{
+      background:var(--card);
+      border:1px solid rgba(255,255,255,.07);
+      border-radius:18px;
+      padding:14px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+
+    /* Empty state is VISIBLE by default (important for reliability) */
+    .center{
+      min-height: calc(100vh - 36px);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .emptyInner{
+      width:min(520px, 92vw);
+      text-align:center;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      align-items:center;
+      justify-content:center;
+    }
+    .bigBtn{
+      border:1px solid rgba(125,211,252,.45);
+      background: rgba(125,211,252,.12);
+      color: var(--accent);
+      border-radius:18px;
+      padding:18px 18px;       /* bigger */
+      cursor:pointer;
+      font-size:16px;          /* bigger */
+      font-weight:600;
+      user-select:none;
+      width:100%;
+      max-width:360px;
+    }
+    .bigBtn:hover{background: rgba(125,211,252,.16)}
+    .emptyHint{
+      color:var(--muted);
+      font-size:13px;
+      max-width:420px;
+    }
+    .noscript{
+      margin-top:10px;
+      color: var(--danger);
+      font-size:13px;
+    }
+
+    button{
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.06);
+      color:var(--text);
+      border-radius:12px;
+      padding:10px 12px;
+      cursor:pointer;
+      font-size:14px;          /* a bit larger */
+      user-select:none;
+    }
+    button:hover{background:rgba(255,255,255,.09)}
+    button.primary{border-color: rgba(125,211,252,.40); background: rgba(125,211,252,.10); color: var(--accent);}
+    button.primary:hover{background: rgba(125,211,252,.14)}
+    button.ok{border-color: rgba(52,211,153,.40); background: rgba(52,211,153,.12);}
+    button.ok:hover{background: rgba(52,211,153,.16)}
+    button.danger{border-color: rgba(251,113,133,.40); background: rgba(251,113,133,.12);}
+    button.danger:hover{background: rgba(251,113,133,.16)}
+
+    .topbar{
+      display:flex;align-items:center;justify-content:space-between;gap:12px;
+      margin-bottom:12px;
+    }
+    .brand{display:flex;flex-direction:column;gap:2px}
+    .brand h1{margin:0;font-size:18px}
+    .brand .sub{color:var(--muted);font-size:12px}
+    .actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+
+    .planHead{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
+    .titleRow{display:flex;gap:10px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}
+    .planTitle{margin:0;font-size:18px}
+    .metaPills{display:flex;gap:8px;flex-wrap:wrap}
+    .pill{
+      font-size:12px;color:var(--muted);
+      border:1px solid rgba(255,255,255,.09);
+      background:rgba(255,255,255,.03);
+      border-radius:999px;
+      padding:6px 10px;
+      user-select:none;
+    }
+    .subtitle{color:var(--muted);font-size:13px}
+
+    table{
+      width:100%;
+      border-collapse:separate;
+      border-spacing:0;
+      border-radius:14px;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.07);
+    }
+    thead th{
+      text-align:right;
+      font-size:12px;
+      color:var(--muted);
+      background:rgba(255,255,255,.03);
+      padding:10px 12px;
+      border-bottom:1px solid rgba(255,255,255,.06);
+      white-space:nowrap;
+    }
+    tbody td{
+      padding:10px 12px;
+      border-bottom:1px solid rgba(255,255,255,.06);
+      vertical-align:top;
+      font-size:13px;
+    }
+    tbody tr:last-child td{border-bottom:none}
+    .time{color:#cfe2ff;font-variant-numeric: tabular-nums; white-space:nowrap}
+    .subject{color:#dbeafe;white-space:nowrap}
+    .topic{color:var(--text)}
+    .task{color:var(--muted)}
+    .checkcell{width:44px;text-align:center}
+    input[type="checkbox"]{width:18px;height:18px;cursor:pointer;accent-color: var(--ok);}
+    tr.done td{opacity:.55}
+    tr.done .topic, tr.done .task{text-decoration: line-through}
+
+    details{
+      margin-top:12px;
+      border:1px solid rgba(255,255,255,.06);
+      border-radius:14px;
+      background:rgba(255,255,255,.02);
+      overflow:hidden;
+    }
+    summary{
+      list-style:none;
+      cursor:pointer;
+      padding:10px 12px;
+      color:var(--muted);
+      font-size:13px;
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      user-select:none;
+    }
+    summary::-webkit-details-marker{display:none}
+    .panel{padding:12px;border-top:1px solid rgba(255,255,255,.06)}
+    .tip{
+      padding:10px 12px;border-radius:12px;
+      border:1px solid rgba(255,255,255,.06);
+      background:rgba(255,255,255,.03);
+      color:var(--muted);
+      font-size:13px;
+      margin-bottom:8px;
+    }
+    .tip b{color:var(--text)}
+    .lines p{margin:0 0 8px 0;color:var(--muted);font-size:13px}
+
+    /* Dialog */
+    dialog{
+      width:min(880px, 92vw);
+      border:none;
+      border-radius:18px;
+      padding:0;
+      background:rgba(17,24,38,.96);
+      color:var(--text);
+      box-shadow: 0 20px 60px rgba(0,0,0,.65);
+      border:1px solid rgba(255,255,255,.10);
+    }
+    dialog::backdrop{background:rgba(0,0,0,.55)}
+    .dlgHead{
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      padding:12px 12px 10px 12px;
+      border-bottom:1px solid rgba(255,255,255,.06);
+    }
+    .dlgHead h2{margin:0;font-size:14px}
+    .dlgBody{padding:12px}
+    textarea{
+      width:100%;
+      min-height:240px;
+      resize:vertical;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.03);
+      color:var(--text);
+      padding:12px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size:12px;
+      line-height:1.6;
+      outline:none;
+    }
+    textarea:focus{border-color: rgba(125,211,252,.45); box-shadow: 0 0 0 3px rgba(125,211,252,.10);}
+    .dlgActions{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:flex-start;margin-top:10px}
+    .status{font-size:12px;color:var(--muted);margin-top:8px}
+    .status.good{color: rgba(52,211,153,.95)}
+    .status.bad{color: rgba(251,113,133,.95)}
+    .fileRow{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:10px}
+    input[type="file"]{display:none;}
+    label.fileBtn{
+      border:1px dashed rgba(255,255,255,.20);
+      background:rgba(255,255,255,.03);
+      color:var(--muted);
+      border-radius:12px;
+      padding:10px 12px;
+      cursor:pointer;
+      font-size:13px;
+      user-select:none;
+    }
+    label.fileBtn:hover{background:rgba(255,255,255,.06)}
+
+    /* 3-dot menu */
+    .menuWrap{position:relative}
+    .dots{width:40px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:12px;}
+    .popover{
+      position:absolute; top:46px; left:0;
+      min-width:240px;
+      background:rgba(17,24,38,.92);
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:16px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      padding:10px;
+      display:none;
+      z-index:10;
+    }
+    .popover.show{display:block}
+    .popTitle{font-size:12px;color:var(--muted);margin:0 0 8px 0}
+    .popRow{display:flex;gap:8px;flex-wrap:wrap}
+    .popRow button{width:100%; text-align:right}
+
+    pre.export{
+      margin:0;
+      padding:12px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.03);
+      color:var(--text);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size:12px;
+      line-height:1.6;
+      white-space:pre;
+      overflow:auto;
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- EMPTY STATE (visible by default) -->
+  <div id="emptyState" class="center">
+    <div class="emptyInner">
+      <button class="bigBtn" id="openLoadBig">بارگذاری برنامه</button>
+      <div class="emptyHint">بعد از بارگذاری، برنامه نمایش داده می‌شود و می‌توانی تیک بزنی و آخر شب خروجی بگیری.</div>
+      <noscript><div class="noscript">جاوااسکریپت غیرفعال است؛ برای کارکرد این صفحه باید JS روشن باشد.</div></noscript>
+    </div>
+  </div>
+
+  <!-- PLAN STATE (hidden by default) -->
+  <div id="planState" style="display:none">
+    <div class="topbar">
+      <div class="brand">
+        <h1>Todo روزانه</h1>
+        <div class="sub">فقط اجرا کن. آخر شب خروجی بگیر.</div>
+      </div>
+
+      <div class="actions">
+        <button class="ok" id="exportBtn">خروجی</button>
+        <button id="resetChecksBtn">ریست تیک‌ها</button>
+
+        <div class="menuWrap">
+          <button class="dots" id="dotsBtn" aria-label="منو">⋯</button>
+          <div class="popover" id="popover">
+            <p class="popTitle">گزینه‌ها</p>
+            <div class="popRow">
+              <button class="primary" id="openLoadSmall">بارگذاری برنامه جدید</button>
+              <button class="danger" id="resetAllBtn">ریست کامل (برنامه + تیک‌ها)</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" id="captureArea">
+      <div class="planHead">
+        <div class="titleRow">
+          <p id="planTitle" class="planTitle"></p>
+          <div id="planMeta" class="metaPills"></div>
+        </div>
+        <div id="planSubtitle" class="subtitle"></div>
+      </div>
+
+      <table aria-label="برنامه">
+        <thead>
+          <tr>
+            <th class="checkcell">✓</th>
+            <th>زمان</th>
+            <th>درس</th>
+            <th>مبحث</th>
+            <th>کار دقیق</th>
+          </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+
+      <details id="tipsPanel" style="display:none">
+        <summary>نکات سرعت و تمرکز <span class="pill" id="tipsCount"></span></summary>
+        <div class="panel" id="tips"></div>
+      </details>
+
+      <details id="linesPanel" style="display:none">
+        <summary>جملات شبانه <span class="pill" id="linesCount"></span></summary>
+        <div class="panel lines" id="lines"></div>
+      </details>
+
+      <details id="exportPanel" style="display:none">
+        <summary>خروجی آماده است <span class="pill">JSON</span></summary>
+        <div class="panel">
+          <div class="actions" style="justify-content:flex-start;margin-bottom:10px">
+            <button id="copyExportBtn">کپی JSON</button>
+            <button class="primary" id="downloadPngBtn">دانلود تصویر (PNG)</button>
+          </div>
+          <pre class="export" id="exportBox"></pre>
+          <div class="status" id="status"></div>
+        </div>
+      </details>
+    </div>
+  </div>
+
+</div>
+
+<!-- LOAD DIALOG -->
+<dialog id="loadDlg">
+  <div class="dlgHead">
+    <h2>بارگذاری برنامه (JSON)</h2>
+    <button id="closeDlg">بستن</button>
+  </div>
+  <div class="dlgBody">
+    <textarea id="jsonInput" spellcheck="false"></textarea>
+
+    <div class="dlgActions">
+      <button id="pasteBtn">Paste</button>
+      <button id="clearBtn">Clear</button>
+      <button class="primary" id="applyBtn">اعمال</button>
+    </div>
+
+    <div class="fileRow">
+      <label class="fileBtn" for="jsonFile">آپلود فایل JSON</label>
+      <input id="jsonFile" type="file" accept="application/json,.json" />
+      <button id="sampleBtn">نمونه</button>
+    </div>
+
+    <div class="status" id="dlgStatus"></div>
+  </div>
+</dialog>
+
+<script>
+  const PLAN_KEY   = "todo_plan_v4";
+  const CHECKS_KEY = "todo_checks_v4";
+
+  const el = {
+    emptyState: document.getElementById("emptyState"),
+    planState: document.getElementById("planState"),
+    openLoadBig: document.getElementById("openLoadBig"),
+    openLoadSmall: document.getElementById("openLoadSmall"),
+
+    exportBtn: document.getElementById("exportBtn"),
+    resetChecksBtn: document.getElementById("resetChecksBtn"),
+    resetAllBtn: document.getElementById("resetAllBtn"),
+
+    dotsBtn: document.getElementById("dotsBtn"),
+    popover: document.getElementById("popover"),
+
+    captureArea: document.getElementById("captureArea"),
+
+    planTitle: document.getElementById("planTitle"),
+    planSubtitle: document.getElementById("planSubtitle"),
+    planMeta: document.getElementById("planMeta"),
+    rows: document.getElementById("rows"),
+
+    tipsPanel: document.getElementById("tipsPanel"),
+    tipsCount: document.getElementById("tipsCount"),
+    tips: document.getElementById("tips"),
+
+    linesPanel: document.getElementById("linesPanel"),
+    linesCount: document.getElementById("linesCount"),
+    lines: document.getElementById("lines"),
+
+    exportPanel: document.getElementById("exportPanel"),
+    exportBox: document.getElementById("exportBox"),
+    copyExportBtn: document.getElementById("copyExportBtn"),
+    downloadPngBtn: document.getElementById("downloadPngBtn"),
+    status: document.getElementById("status"),
+
+    loadDlg: document.getElementById("loadDlg"),
+    closeDlg: document.getElementById("closeDlg"),
+    jsonInput: document.getElementById("jsonInput"),
+    pasteBtn: document.getElementById("pasteBtn"),
+    clearBtn: document.getElementById("clearBtn"),
+    applyBtn: document.getElementById("applyBtn"),
+    sampleBtn: document.getElementById("sampleBtn"),
+    jsonFile: document.getElementById("jsonFile"),
+    dlgStatus: document.getElementById("dlgStatus"),
+  };
+
+  function escapeHtml(s){
+    return String(s)
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;")
+      .replaceAll("'","&#039;");
+  }
+
+  function setDlgStatus(msg, ok=true){
+    el.dlgStatus.textContent = msg || "";
+    el.dlgStatus.classList.toggle("good", ok);
+    el.dlgStatus.classList.toggle("bad", !ok);
+  }
+  function setStatus(msg, ok=true){
+    el.status.textContent = msg || "";
+    el.status.classList.toggle("good", ok);
+    el.status.classList.toggle("bad", !ok);
+  }
+
+  function safeParseJSON(text){
+    try{ return {ok:true, data: JSON.parse(text)}; }
+    catch(e){ return {ok:false, err: e.message}; }
+  }
+
+  function normalizePlan(plan){
+    if(!plan || typeof plan !== "object") throw new Error("JSON باید یک آبجکت باشد.");
+    const title = String(plan.title || "برنامه روزانه");
+    const subtitle = String(plan.subtitle || "");
+    const meta = Array.isArray(plan.meta) ? plan.meta.map(String) : [];
+    const tips = Array.isArray(plan.tips) ? plan.tips.map(String) : [];
+    const lines = Array.isArray(plan.lines) ? plan.lines.map(String) : [];
+    if(!Array.isArray(plan.items)) throw new Error("فیلد items باید آرایه باشد.");
+    const items = plan.items.map((it, idx) => {
+      if(!it || typeof it !== "object") throw new Error(`آیتم ${idx+1} معتبر نیست.`);
+      return {
+        time: String(it.time || ""),
+        subject: String(it.subject || ""),
+        topic: String(it.topic || ""),
+        task: String(it.task || ""),
+      };
+    });
+    return {title, subtitle, meta, items, tips, lines};
+  }
+
+  function savePlan(plan){ localStorage.setItem(PLAN_KEY, JSON.stringify(plan)); }
+  function loadPlan(){
+    const raw = localStorage.getItem(PLAN_KEY);
+    if(!raw) return null;
+    try{ return normalizePlan(JSON.parse(raw)); } catch { return null; }
+  }
+
+  function showState(hasPlan){
+    el.emptyState.style.display = hasPlan ? "none" : "flex";
+    el.planState.style.display  = hasPlan ? "block" : "none";
+  }
+
+  function getRows(){ return Array.from(el.rows.querySelectorAll("tr")); }
+  function saveChecks(){
+    const state = getRows().map(tr => tr.querySelector('input[type="checkbox"]').checked);
+    localStorage.setItem(CHECKS_KEY, JSON.stringify(state));
+  }
+  function loadChecks(){
+    const raw = localStorage.getItem(CHECKS_KEY);
+    let saved = [];
+    try{ saved = raw ? JSON.parse(raw) : []; } catch { saved = []; }
+    getRows().forEach((tr, i) => {
+      const cb = tr.querySelector('input[type="checkbox"]');
+      const checked = !!saved[i];
+      cb.checked = checked;
+      tr.classList.toggle("done", checked);
+    });
+  }
+  function resetChecks(){
+    localStorage.removeItem(CHECKS_KEY);
+    getRows().forEach(tr => {
+      tr.querySelector('input[type="checkbox"]').checked = false;
+      tr.classList.remove("done");
+    });
+  }
+
+  function attachHandlers(){
+    getRows().forEach(tr => {
+      tr.querySelector('input[type="checkbox"]').addEventListener("change", () => {
+        tr.classList.toggle("done", tr.querySelector('input[type="checkbox"]').checked);
+        saveChecks();
+      });
+    });
+  }
+
+  function render(plan){
+    el.planTitle.textContent = plan.title;
+    el.planSubtitle.textContent = plan.subtitle;
+
+    el.planMeta.innerHTML = "";
+    plan.meta.forEach(m => {
+      const span = document.createElement("span");
+      span.className = "pill";
+      span.textContent = m;
+      el.planMeta.appendChild(span);
+    });
+
+    el.rows.innerHTML = "";
+    plan.items.forEach((it, i) => {
+      const tr = document.createElement("tr");
+      tr.dataset.index = String(i);
+      tr.innerHTML = `
+        <td class="checkcell"><input type="checkbox" /></td>
+        <td class="time">${escapeHtml(it.time)}</td>
+        <td class="subject">${escapeHtml(it.subject)}</td>
+        <td class="topic">${escapeHtml(it.topic)}</td>
+        <td class="task">${escapeHtml(it.task)}</td>
+      `;
+      el.rows.appendChild(tr);
+    });
+    attachHandlers();
+    loadChecks();
+
+    if(plan.tips && plan.tips.length){
+      el.tipsPanel.style.display = "block";
+      el.tipsCount.textContent = String(plan.tips.length);
+      el.tips.innerHTML = "";
+      plan.tips.forEach(t => {
+        const div = document.createElement("div");
+        div.className = "tip";
+        if(t.includes(":")){
+          const [a, ...b] = t.split(":");
+          div.innerHTML = `<b>${escapeHtml(a)}:</b> ${escapeHtml(b.join(":").trim())}`;
+        }else{
+          div.textContent = t;
+        }
+        el.tips.appendChild(div);
+      });
+    }else{
+      el.tipsPanel.style.display = "none";
+      el.tips.innerHTML = "";
+    }
+
+    if(plan.lines && plan.lines.length){
+      el.linesPanel.style.display = "block";
+      el.linesCount.textContent = String(plan.lines.length);
+      el.lines.innerHTML = "";
+      plan.lines.forEach(l => {
+        const p = document.createElement("p");
+        p.textContent = l;
+        el.lines.appendChild(p);
+      });
+    }else{
+      el.linesPanel.style.display = "none";
+      el.lines.innerHTML = "";
+    }
+
+    el.exportPanel.style.display = "none";
+    el.exportBox.textContent = "";
+    setStatus("", true);
+
+    showState(true);
+  }
+
+  function resetAll(){
+    localStorage.removeItem(CHECKS_KEY);
+    localStorage.removeItem(PLAN_KEY);
+    el.rows.innerHTML = "";
+    el.exportPanel.style.display = "none";
+    el.exportBox.textContent = "";
+    setStatus("", true);
+    showState(false);
+  }
+
+  function buildExport(){
+    const plan = loadPlan();
+    if(!plan) throw new Error("برنامه‌ای برای خروجی وجود ندارد.");
+    const checks = getRows().map(tr => tr.querySelector('input[type="checkbox"]').checked);
+    const done = checks.filter(Boolean).length;
+    return {
+      exported_at: new Date().toISOString(),
+      title: plan.title,
+      done, total: checks.length,
+      items: plan.items.map((it, i) => ({...it, done: !!checks[i]}))
+    };
+  }
+
+  // Simple PNG export (SVG foreignObject) — best-effort
+  async function downloadPNG(){
+    const node = document.getElementById("captureArea");
+    const rect = node.getBoundingClientRect();
+
+    const clone = node.cloneNode(true);
+    const exp = clone.querySelector("#exportPanel");
+    if(exp) exp.remove();
+    clone.querySelectorAll("details").forEach(d => d.open = true);
+
+    const wrapper = document.createElement("div");
+    wrapper.style.width = rect.width + "px";
+    wrapper.appendChild(clone);
+
+    const serializer = new XMLSerializer();
+    const html = serializer.serializeToString(wrapper);
+
+    const svg = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="${Math.ceil(rect.width)}" height="${Math.ceil(rect.height + 140)}">
+        <foreignObject x="0" y="0" width="100%" height="100%">
+          <div xmlns="http://www.w3.org/1999/xhtml">${html}</div>
+        </foreignObject>
+      </svg>
+    `;
+
+    const svgBlob = new Blob([svg], {type: "image/svg+xml;charset=utf-8"});
+    const url = URL.createObjectURL(svgBlob);
+
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    await new Promise((resolve, reject) => { img.onload = resolve; img.onerror = reject; img.src = url; });
+
+    const canvas = document.createElement("canvas");
+    const scale = window.devicePixelRatio || 2;
+    canvas.width = Math.ceil(img.width * scale);
+    canvas.height = Math.ceil(img.height * scale);
+    const ctx = canvas.getContext("2d");
+    ctx.scale(scale, scale);
+    ctx.drawImage(img, 0, 0);
+    URL.revokeObjectURL(url);
+
+    const pngUrl = canvas.toDataURL("image/png");
+    const a = document.createElement("a");
+    const plan = loadPlan();
+    const safeName = (plan?.title || "todo").replace(/[^\u0600-\u06FFa-zA-Z0-9 _-]/g, "").trim().replace(/\s+/g, "_");
+    a.download = (safeName || "todo") + ".png";
+    a.href = pngUrl;
+    a.click();
+  }
+
+  // Popover
+  function togglePopover(force){
+    const show = typeof force === "boolean" ? force : !el.popover.classList.contains("show");
+    el.popover.classList.toggle("show", show);
+  }
+  document.addEventListener("click", (e) => {
+    if(e.target === el.dotsBtn) return;
+    if(el.popover.contains(e.target)) return;
+    togglePopover(false);
+  });
+
+  // Dialog
+  function openLoadDialog(){
+    el.loadDlg.showModal();
+    setDlgStatus("", true);
+  }
+  el.openLoadBig.addEventListener("click", openLoadDialog);
+  if(el.openLoadSmall){
+    el.openLoadSmall.addEventListener("click", () => { togglePopover(false); openLoadDialog(); });
+  }
+  el.closeDlg.addEventListener("click", () => el.loadDlg.close());
+
+  el.dotsBtn.addEventListener("click", () => togglePopover());
+
+  // Apply
+  el.applyBtn.addEventListener("click", () => {
+    const parsed = safeParseJSON(el.jsonInput.value.trim());
+    if(!parsed.ok){ setDlgStatus("JSON نامعتبر: " + parsed.err, false); return; }
+    try{
+      const plan = normalizePlan(parsed.data);
+      // Reset checks if length differs
+      const prev = localStorage.getItem(CHECKS_KEY);
+      let prevArr = null;
+      try{ prevArr = prev ? JSON.parse(prev) : null; } catch { prevArr = null; }
+      if(!prevArr || !Array.isArray(prevArr) || prevArr.length !== plan.items.length){
+        localStorage.removeItem(CHECKS_KEY);
+      }
+      savePlan(plan);
+      render(plan);
+      setDlgStatus("اعمال شد ✅", true);
+      el.loadDlg.close();
+    }catch(e){
+      setDlgStatus("خطا: " + e.message, false);
+    }
+  });
+
+  // Paste
+  el.pasteBtn.addEventListener("click", async () => {
+    try{
+      const txt = await navigator.clipboard.readText();
+      if(!txt || !txt.trim()){ setDlgStatus("کلیپ‌بورد خالی است.", false); return; }
+      el.jsonInput.value = txt;
+      setDlgStatus("Paste شد ✅", true);
+    }catch{
+      setDlgStatus("مرورگر اجازه Paste مستقیم نداد. دستی Paste کن.", false);
+    }
+  });
+
+  // Clear
+  el.clearBtn.addEventListener("click", () => { el.jsonInput.value = ""; setDlgStatus("پاک شد.", true); });
+
+  // Upload file
+  el.jsonFile.addEventListener("change", () => {
+    const file = el.jsonFile.files?.[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = () => { el.jsonInput.value = String(reader.result || ""); setDlgStatus("فایل بارگذاری شد ✅", true); };
+    reader.onerror = () => setDlgStatus("خواندن فایل ناموفق بود.", false);
+    reader.readAsText(file, "utf-8");
+  });
+
+  // Sample
+  const sample = {
+    title: "برنامه روز ۱",
+    subtitle: "رویکرد: از آخر به اول — تمرکز: توابع، چندجمله‌ای‌ها، دایره، هوش",
+    meta: ["۸۰ سؤال / ۱۰۰ دقیقه", "قانون: هیچ سؤال > ۹۰ ثانیه"],
+    items: [
+      {"time":"07:30–08:00","subject":"آماده‌سازی","topic":"—","task":"بیداری، صبحانه سبک، بدون موبایل"},
+      {"time":"08:00–08:30","subject":"هوش","topic":"گرم‌کردن","task":"۱۰ سؤال ساده (بدون تحلیل)"},
+      {"time":"08:30–10:00","subject":"ریاضی","topic":"توابع","task":"مرور مفاهیم + ۲۵ سؤال"},
+      {"time":"10:00–10:15","subject":"استراحت","topic":"—","task":"راه رفتن، آب، بدون موبایل"},
+      {"time":"10:15–11:45","subject":"ریاضی","topic":"چندجمله‌ای‌ها","task":"مرور هدفمند + ۳۰ سؤال"},
+      {"time":"12:30–13:30","subject":"هندسه","topic":"دایره","task":"خواص، مماس، زاویه‌ها + ۲۵ سؤال"}
+    ],
+    tips: ["قانون ۹۰ ثانیه: گیر کردی → رد."],
+    lines: ["امروز قفل ندادم؛ پس جلو افتادم."]
+  };
+  el.sampleBtn.addEventListener("click", () => { el.jsonInput.value = JSON.stringify(sample, null, 2); setDlgStatus("نمونه قرار گرفت.", true); });
+
+  // Export & Resets
+  el.exportBtn.addEventListener("click", () => {
+    try{
+      const rep = buildExport();
+      el.exportBox.textContent = JSON.stringify(rep, null, 2);
+      el.exportPanel.style.display = "block";
+      el.exportPanel.open = true;
+      setStatus(`انجام‌شده: ${rep.done}/${rep.total}`, true);
+    }catch(e){
+      setStatus("خطا: " + e.message, false);
+    }
+  });
+  el.copyExportBtn.addEventListener("click", async () => {
+    try{ await navigator.clipboard.writeText(el.exportBox.textContent); setStatus("JSON کپی شد ✅", true); }
+    catch{ setStatus("کپی نشد. دستی کپی کن.", false); }
+  });
+  el.downloadPngBtn.addEventListener("click", async () => {
+    try{ setStatus("در حال ساخت تصویر…", true); await downloadPNG(); setStatus("تصویر آماده شد ✅", true); }
+    catch{ setStatus("ساخت تصویر در این مرورگر موفق نبود.", false); }
+  });
+
+  el.resetChecksBtn.addEventListener("click", () => { resetChecks(); el.exportPanel.style.display = "none"; setStatus("تیک‌ها ریست شدند.", true); });
+  el.resetAllBtn.addEventListener("click", () => { togglePopover(false); resetAll(); });
+
+  // Init
+  const stored = loadPlan();
+  if(stored){
+    el.jsonInput.value = JSON.stringify(stored, null, 2);
+    render(stored);
+  }else{
+    // Show empty state (already visible). Put sample in dialog for convenience.
+    el.jsonInput.value = JSON.stringify(sample, null, 2);
+    showState(false);
+  }
+</script>
+</body>
+</html>
