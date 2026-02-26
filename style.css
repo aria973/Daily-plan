@@ -53,7 +53,7 @@ body{
      margin:0 auto;
     height: 100svh; 
     min-height: 100vh !important ;
-    overflow: hidden ;                   
+    overflow: auto ;                   
     -webkit-overflow-scrolling: touch;
     padding: calc(18px + env(safe-area-inset-top)) 18px calc(18px + env(safe-area-inset-bottom));
      padding-bottom: calc(18px + env(safe-area-inset-bottom) + 72px) !important ;
@@ -332,6 +332,7 @@ body{
       overflow:auto;
 
     }
+
 
 
 
