@@ -49,7 +49,8 @@ body{
     .wrap{
      max-width:980px;
      margin:0 auto;
-    height: 100svh;                
+    height: 100svh; 
+    min-height: 100vh !important ;
     overflow: auto;                   
     -webkit-overflow-scrolling: touch;
     padding: calc(18px + env(safe-area-inset-top)) 18px calc(18px + env(safe-area-inset-bottom));
@@ -144,9 +145,10 @@ body{
     button.danger:hover{background: rgba(251,113,133,.16)}
 
     .topbar{
+     box-shadow: inset 0 0 5px rgba(255,255,255,.08) ; 
      padding: 12px 14px !important ; 
      top: calc(8px + env(safe-area-inset-top));
-      background: rgba(17,24,38,.18) ;
+      background: rgba(17,24,38,.11) ;
      backdrop-filter: blur(13px);
       -webkit-backdrop-filter: blur(13px) saturate(132%);
      border-bottom: 1px solid rgba(255,255,255,.06);
@@ -328,6 +330,7 @@ body{
       overflow:auto;
 
     }
+
 
 
 
