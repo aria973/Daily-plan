@@ -45,16 +45,6 @@ body{
     }
 
 
-body::after{
-  content:"";
-  position: fixed;
-  left: 0; right: 0;
-  bottom: 0;
-  height: calc(72px + env(safe-area-inset-bottom));
-  pointer-events: none;
-  background: linear-gradient(to bottom, rgba(0,0,0,0), var(--bg) 70%);
-  z-index: 60;
-}
 
     .wrap{
      max-width:980px;
@@ -156,11 +146,12 @@ body::after{
     .topbar{
      padding: 12px 14px !important ; 
      top: calc(8px + env(safe-area-inset-top));
-      background: rgba(17,24,38,.55) ;
+      background: rgba(17,24,38,.25) ;
      backdrop-filter: blur(13px);
       -webkit-backdrop-filter: blur(13px) saturate(172%);
      border-bottom: 1px solid rgba(255,255,255,.06);
-     border-radius: 14px;
+     border-radius: 18px;
+     outline:none ;
       position: sticky;
        top: 0;
        z-index: 50;
@@ -173,7 +164,7 @@ body::after{
     .brand{display:flex;flex-direction:column;gap:2px}
     .brand h1{margin:0;font-size:18px}
     .brand .sub{color:var(--muted);font-size:12px}
-    .actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .actions{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
 
     .planHead{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
     .titleRow{display:flex;gap:10px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}
@@ -337,6 +328,7 @@ body::after{
       overflow:auto;
 
     }
+
 
 
 
