@@ -22,12 +22,12 @@ html{
 body{
   padding-top: env(safe-area-inset-top);
   padding-bottom: env(safe-area-inset-bottom);
-  min-height: 100svh;
+  min-height: 100vh;
 }
 
     body{
       min-width: 100% ;
-      min-height: 100svh;
+      min-height: 100vh;
       margin:0;
       overflow: hidden;                 /* body اسکرول نخوره */
       padding: 0 !important ;                       /* پدینگ را می‌بریم داخل wrap */
@@ -328,6 +328,7 @@ body{
       overflow:auto;
 
     }
+
 
 
 
