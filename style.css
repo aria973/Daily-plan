@@ -44,7 +44,7 @@ body{
       padding:18px;
     }
     .wrap{
-     max-width:980px;
+     max-width:90%;
      margin:0 auto;
     height: 100svh;                
     overflow: auto;                   
@@ -138,8 +138,9 @@ body{
     button.danger:hover{background: rgba(251,113,133,.16)}
 
     .topbar{
-      background: rgba(17,24,38,.72);
-     backdrop-filter: blur(10px);
+      background: rgba(17,24,38,.32);
+     backdrop-filter: blur(13px);
+      -webkit-backdrop-filter: blur(13px) saturate(172%);
      border-bottom: 1px solid rgba(255,255,255,.06);
      border-radius: 14px;
       position: sticky;
@@ -318,5 +319,6 @@ body{
       overflow:auto;
 
     }
+
 
 
