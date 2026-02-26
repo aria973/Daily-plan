@@ -2,6 +2,7 @@
 <html lang="fa" dir="rtl">
 <head>
   <meta charset="utf-8" />
+  <meta name="theme-color" content="rgb(0,6,10)">
   <link rel="apple-touch-icon" href="ara_apple_ios.png">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1 , user-scalable=no , viewport-fit=cover" />
   <title>Todo </title>
@@ -118,6 +119,15 @@
 </dialog>
 
 <script src="script.js" defer></script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventLisener('load', () => {
+      navigator.serviceWoorker.register('./sw.js')
+        .then(() => console.log('SW failed' , err));
+    });
+  }
+</script>
 </body>
 
 </html>
+
