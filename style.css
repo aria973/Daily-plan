@@ -19,7 +19,7 @@
 
 html{
   background: var(--bg);
-  min-height: 100vh;
+  height: 100% ;
 }
 body{
   padding-top: env(safe-area-inset-top);
@@ -29,7 +29,7 @@ body{
 
     body{
       min-width: 100% ;
-      
+      min-height: 100vh;
       margin:0;
       overflow: hidden;                 /* body اسکرول نخوره */
       padding: 0 !important ;                       /* پدینگ را می‌بریم داخل wrap */
@@ -332,6 +332,7 @@ body{
       overflow:auto;
 
     }
+
 
 
 
