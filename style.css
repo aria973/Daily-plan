@@ -20,6 +20,7 @@
 html{
   background: var(--bg);
   height: 100% ;
+  
 }
 body{
   padding-top: env(safe-area-inset-top);
@@ -51,9 +52,7 @@ body{
     .wrap{
      max-width:980px;
      margin:0 auto;
-    height: 100svh; 
-    min-height: 100vh !important ;
-    overflow: auto ;                   
+     min-height: 100dvh !important ;                  
     -webkit-overflow-scrolling: touch;
     padding: calc(18px + env(safe-area-inset-top)) 18px calc(18px + env(safe-area-inset-bottom));
      padding-bottom: calc(18px + env(safe-area-inset-bottom) + 72px) !important ;
