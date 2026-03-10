@@ -1,13 +1,13 @@
 const CACHE = "todo-cache-v1";
-const ASSETS = {
+const ASSETS = [
   "./",
   "./index.html",
   "./manifest.webmanifest",
   "./ara_apple_ios.png"
-};
+];
 
-self.addeventListener("install", (e) => {
-   e.waitUntil(caches.open(CACHE).the(c =>  c.addAll(ASSETS)));
+self.addEventListener("install", (e) => {
+   e.waitUntil(caches.open(CACHE).then(c =>  c.addAll(ASSETS)));
 });
 
 self.addEventListener("fetch" , (e) => {
