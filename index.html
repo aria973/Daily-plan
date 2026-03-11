@@ -2,135 +2,143 @@
 <html lang="fa" dir="rtl">
 <head>
   <meta charset="utf-8" />
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="rgb(0,6,10)">
-  <link rel="apple-touch-icon" href="ara_apple_ios.png">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1 , user-scalable=no , viewport-fit=cover" />
-  <title>Todo </title>
-  <link rel="stylesheet" href="style.css">
+  <meta name="theme-color" content="rgb(0,6,10)" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+
+  <title>Todo</title>
+
+  <link rel="stylesheet" href="style.css" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="ara_apple_ios.png" />
 </head>
 <body>
-<div class="wrap">
+  <div class="wrap">
 
-  <!-- EMPTY STATE (visible by default) -->
-  <div id="emptyState" class="center">
-    <div class="emptyInner">
-      <button class="bigBtn" id="openLoadBig">Start Ara</button>
-      <div class="emptyHint">بعد از بارگذاری، برنامه نمایش داده می‌شود و می‌توانی تیک بزنی و آخر شب خروجی بگیری.</div>
-      <noscript><div class="noscript">جاوااسکریپت غیرفعال است؛ برای کارکرد این صفحه باید JS روشن باشد.</div></noscript>
-    </div>
-  </div>
-
-  <!-- PLAN STATE (hidden by default) -->
-  <div id="planState" style="display:none">
-    <div class="topbar">
-      <div class="brand">
-        <h1>Daily Todo list</h1>
-        <div class="sub">The only way Through is ... keep moving forward</div>
+    <!-- EMPTY STATE (visible by default) -->
+    <div id="emptyState" class="center">
+      <div class="emptyInner">
+        <button class="bigBtn" id="openLoadBig">Start Ara</button>
+        <div class="emptyHint">بعد از بارگذاری، برنامه نمایش داده می‌شود و می‌توانی تیک بزنی و آخر شب خروجی بگیری.</div>
+        <noscript>
+          <div class="noscript">جاوااسکریپت غیرفعال است؛ برای کارکرد این صفحه باید JS روشن باشد.</div>
+        </noscript>
       </div>
+    </div>
 
-      <div class="actions">
-        <button class="ok" id="exportBtn">خروجی</button>
-        <button id="resetChecksBtn">ریست تیک‌ها</button>
+    <!-- PLAN STATE (hidden by default) -->
+    <div id="planState" style="display:none">
+      <div class="topbar">
+        <div class="brand">
+          <h1>Daily Todo list</h1>
+          <div class="sub">The only way through is... keep moving forward</div>
+        </div>
 
-        <div class="menuWrap">
-          <button class="dots" id="dotsBtn" aria-label="منو">⋯</button>
-          <div class="popover" id="popover">
-            <p class="popTitle">گزینه‌ها</p>
-            <div class="popRow">
-              <button class="primary" id="openLoadSmall">بارگذاری برنامه جدید</button>
-              <button class="danger" id="resetAllBtn">ریست کامل (برنامه + تیک‌ها)</button>
+        <div class="actions">
+          <button class="ok" id="exportBtn">خروجی</button>
+          <button id="resetChecksBtn">ریست تیک‌ها</button>
+
+          <div class="menuWrap">
+            <button class="dots" id="dotsBtn" aria-label="منو">⋯</button>
+            <div class="popover" id="popover">
+              <p class="popTitle">گزینه‌ها</p>
+              <div class="popRow">
+                <button class="primary" id="openLoadSmall">بارگذاری برنامه جدید</button>
+                <button class="danger" id="resetAllBtn">ریست کامل (برنامه + تیک‌ها)</button>
+              </div>
             </div>
           </div>
         </div>
       </div>
+
+      <div class="card" id="captureArea">
+        <div class="planHead">
+          <div class="titleRow">
+            <p id="planTitle" class="planTitle"></p>
+            <div id="planMeta" class="metaPills"></div>
+          </div>
+          <div id="planSubtitle" class="subtitle"></div>
+        </div>
+
+        <div class="tableWrap">
+          <table aria-label="برنامه">
+            <thead>
+              <tr>
+                <th class="checkcell">✓</th>
+                <th>زمان</th>
+                <th>درس</th>
+                <th>مبحث</th>
+                <th>کار دقیق</th>
+              </tr>
+            </thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </div>
+
+        <details id="tipsPanel" style="display:none">
+          <summary>نکات سرعت و تمرکز <span class="pill" id="tipsCount"></span></summary>
+          <div class="panel" id="tips"></div>
+        </details>
+
+        <details id="linesPanel" style="display:none">
+          <summary>جملات شبانه <span class="pill" id="linesCount"></span></summary>
+          <div class="panel lines" id="lines"></div>
+        </details>
+
+        <details id="exportPanel" style="display:none">
+          <summary>خروجی آماده است <span class="pill">JSON</span></summary>
+          <div class="panel">
+            <div class="actions" style="justify-content:flex-start;margin-bottom:10px">
+              <button id="copyExportBtn">کپی JSON</button>
+              <button class="primary" id="downloadPngBtn">دانلود تصویر (PNG)</button>
+            </div>
+            <pre class="export" id="exportBox"></pre>
+            <div class="status" id="status"></div>
+          </div>
+        </details>
+      </div>
     </div>
 
-    <div class="card" id="captureArea">
-      <div class="planHead">
-        <div class="titleRow">
-          <p id="planTitle" class="planTitle"></p>
-          <div id="planMeta" class="metaPills"></div>
-        </div>
-        <div id="planSubtitle" class="subtitle"></div>
+  </div>
+
+  <!-- LOAD DIALOG -->
+  <dialog id="loadDlg">
+    <div class="dlgHead">
+      <h2>بارگذاری برنامه (JSON)</h2>
+      <button id="closeDlg">بستن</button>
+    </div>
+    <div class="dlgBody">
+      <textarea id="jsonInput" spellcheck="false"></textarea>
+
+      <div class="dlgActions">
+        <button id="pasteBtn">Paste</button>
+        <button id="clearBtn">Clear</button>
+        <button class="primary" id="applyBtn">اعمال</button>
       </div>
 
-      <table aria-label="برنامه">
-        <thead>
-          <tr>
-            <th class="checkcell">✓</th>
-            <th>زمان</th>
-            <th>درس</th>
-            <th>مبحث</th>
-            <th>کار دقیق</th>
-          </tr>
-        </thead>
-        <tbody id="rows"></tbody>
-      </table>
+      <div class="fileRow">
+        <label class="fileBtn" for="jsonFile">آپلود فایل JSON</label>
+        <input id="jsonFile" type="file" accept="application/json,.json" />
+        <button id="sampleBtn">نمونه</button>
+      </div>
 
-      <details id="tipsPanel" style="display:none">
-        <summary>نکات سرعت و تمرکز <span class="pill" id="tipsCount"></span></summary>
-        <div class="panel" id="tips"></div>
-      </details>
-
-      <details id="linesPanel" style="display:none">
-        <summary>جملات شبانه <span class="pill" id="linesCount"></span></summary>
-        <div class="panel lines" id="lines"></div>
-      </details>
-
-      <details id="exportPanel" style="display:none">
-        <summary>خروجی آماده است <span class="pill">JSON</span></summary>
-        <div class="panel">
-          <div class="actions" style="justify-content:flex-start;margin-bottom:10px">
-            <button id="copyExportBtn">کپی JSON</button>
-            <button class="primary" id="downloadPngBtn">دانلود تصویر (PNG)</button>
-          </div>
-          <pre class="export" id="exportBox"></pre>
-          <div class="status" id="status"></div>
-        </div>
-      </details>
+      <div class="status" id="dlgStatus"></div>
     </div>
-  </div>
+  </dialog>
 
-</div>
-
-<!-- LOAD DIALOG -->
-<dialog id="loadDlg">
-  <div class="dlgHead">
-    <h2>بارگذاری برنامه (JSON)</h2>
-    <button id="closeDlg">بستن</button>
-  </div>
-  <div class="dlgBody">
-    <textarea id="jsonInput" spellcheck="false"></textarea>
-
-    <div class="dlgActions">
-      <button id="pasteBtn">Paste</button>
-      <button id="clearBtn">Clear</button>
-      <button class="primary" id="applyBtn">اعمال</button>
-    </div>
-
-    <div class="fileRow">
-      <label class="fileBtn" for="jsonFile">آپلود فایل JSON</label>
-      <input id="jsonFile" type="file" accept="application/json,.json" />
-      <button id="sampleBtn">نمونه</button>
-    </div>
-
-    <div class="status" id="dlgStatus"></div>
-  </div>
-</dialog>
-
-<script src="script.js" defer></script>
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventLisener('load', () => {
-      navigator.serviceWoorker.register('./sw.js')
-        .then(() => console.log('SW failed' , err));
-    });
-  }
-</script>
+  <script src="script.js" defer></script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", async () => {
+        try {
+          const reg = await navigator.serviceWorker.register("./sw.js");
+          console.log("SW registered:", reg.scope);
+        } catch (err) {
+          console.error("SW registration failed:", err);
+        }
+      });
+    }
+  </script>
 </body>
-
 </html>
-
